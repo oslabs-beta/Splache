@@ -5,7 +5,7 @@ async function checkCache (args: object, info: object, client:any, callback:any)
     //     argValString += String(args[argKeyArray[i]]); //for each key in argKeyArray add the value to the arValString
     // }
     
-    const key = info.fieldName + String(args.id); //set the key equal to the fieldName concatenated with the argValString
+    const key = String(info.returnType) + String(args.id); //set the key equal to the fieldName concatenated with the argValString
     const isInCache = await client.EXISTS(key)
         if (isInCache){
             const returnObj = await client.GET(key);
@@ -19,4 +19,11 @@ async function checkCache (args: object, info: object, client:any, callback:any)
         }
 }
 
+async function updateCache (args: object, info: object, client:any, callback:any) {
+    const key  = String(info.returnType) + String(args.id);
+    const returnObj = callback(args)
+    await client.SET(key, JSON.stringify(returnObj));
+    return returnObj
+}
 module.exports.checkCache = checkCache;
+module.exports.updateCache = updateCache;

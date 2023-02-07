@@ -2,7 +2,7 @@ declare function require(name:string);
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
-const { checkCache } = require('./testFunc.ts')
+const { checkCache, updateCache } = require('./testFunc.ts')
 const port = 4000;
 
 const { createClient } = require('redis');
@@ -51,15 +51,26 @@ const books = [
     }
 ]
 
-function updateTitle({id, title}){
-    books.map((book) => {
-        if (book.id === id){
-            book.title = title;
-            return book
+function updateTitle(args){
+    const id = args.id;
+    const title = args.title
+    for (let i=0; i<books.length; i++){
+        if (books[i].id === id){
+            books[i].title = title;
+            return books[i];
         }
-    })
-    const returnObj = books.filter(book => book.id = id)[0]
-    return returnObj;
+    }
+
+    // const id = args.id;
+    // const title = args.title
+    // books.map((book) => {
+    //     if (book.id === id){
+    //         book.title = title;
+    //         return book
+    //     }
+    // })
+    // const returnObj = books.filter(book => book.id = id)[0]
+    // return returnObj;
 }
 function getBook(args){
     const id = args.id;
@@ -69,18 +80,23 @@ function getBook(args){
 
 const resolvers = {
     books: (parent, args, context, info) => {
-        console.log(info)
+
         return books;
+        
     },
     hello: () => {
+
         return 'hello there nicky'
     },
     book: async (args, context, info) => {
+
         return checkCache(args, info, client, getBook)
+
     },
     updateTitle : (args, context, info) => {
-        console.log(info);
-        return updateTitle(args)
+        
+        return updateCache(args, info, client, updateTitle)
+
     }
 };
 
