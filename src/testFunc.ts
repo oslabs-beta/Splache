@@ -1,10 +1,6 @@
-async function checkCache (args: object, info: object, client:any, callback:any) {
-    // const argKeyArray = Object.keys(args).sort(); //make an array of sorted keys from the args object
-    // let argValString = '';
-    // for (let i=0; i<argKeyArray.length; i++){
-    //     argValString += String(args[argKeyArray[i]]); //for each key in argKeyArray add the value to the arValString
-    // }
-    
+import { RedisClientType } from "@redis/client";
+
+async function checkCache (args: {id: number}, info: {returnType: any}, client: RedisClientType, callback:any) {
     const key = String(info.returnType) + String(args.id); //set the key equal to the fieldName concatenated with the argValString
     const isInCache = await client.EXISTS(key)
         if (isInCache){
