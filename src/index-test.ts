@@ -1,12 +1,14 @@
+declare function require(name:string);
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
-const { checkCache } = require('./testFunc.js')
+const { checkCache } = require('./testFunc.ts')
 const port = 4000;
 
 const { createClient } = require('redis');
 
-let client = createClient();
+const client = createClient();
+console.log(typeof client)
 
 client.on('error', err => console.log('Redis Client Error', err));
 
@@ -17,7 +19,7 @@ client.connect()
 const app = express();
 
 // Create a schema and a root resolver:
-var schema = buildSchema(`
+const schema = buildSchema(`
     type Query {
         books: [Book]
         book(id: Int): Book
@@ -29,6 +31,7 @@ var schema = buildSchema(`
     type Book {
         author: String!
         title: String!
+        id: Int
     }
 `);
 
@@ -55,7 +58,8 @@ function updateTitle({id, title}){
             return book
         }
     })
-    return books.filter(book => book.id = id)[0]
+    const returnObj = books.filter(book => book.id = id)[0]
+    return returnObj;
 }
 function getBook(args){
     const id = args.id;
@@ -63,7 +67,7 @@ function getBook(args){
     return returnObj
 }
 
-var resolvers = {
+const resolvers = {
     books: (parent, args, context, info) => {
         console.log(info)
         return books;
@@ -74,7 +78,10 @@ var resolvers = {
     book: async (args, context, info) => {
         return checkCache(args, info, client, getBook)
     },
-    updateTitle : updateTitle
+    updateTitle : (args, context, info) => {
+        console.log(info);
+        return updateTitle(args)
+    }
 };
 
 // Use those to handle incoming requests:

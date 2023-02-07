@@ -20,5 +20,6 @@
         "@typescript-eslint"
     ],
     "rules": {
-    }
+        "no-var-requires": "off"
+      }
 }
