@@ -1,8 +1,9 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
-const { checkCache } = require('./testFunc.js')
+const { checkCache } = require('./testFunc.js');
 const port = 4000;
+
 
 const { createClient } = require('redis');
 
@@ -57,6 +58,7 @@ function updateTitle({id, title}){
     })
     return books.filter(book => book.id = id)[0]
 }
+
 function getBook(args){
     const id = args.id;
     const returnObj = books.filter((book) => book.id === id)[0]
