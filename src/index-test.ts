@@ -1,13 +1,15 @@
+declare function require(name:string);
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
-const { checkCache } = require('./testFunc.js');
+const { checkCache, updateCache } = require('./testFunc.ts')
 const port = 4000;
 
 
 const { createClient } = require('redis');
 
-let client = createClient();
+const client = createClient();
+console.log(typeof client)
 
 client.on('error', err => console.log('Redis Client Error', err));
 
@@ -18,7 +20,7 @@ client.connect()
 const app = express();
 
 // Create a schema and a root resolver:
-var schema = buildSchema(`
+const schema = buildSchema(`
     type Query {
         books: [Book]
         book(id: Int): Book
@@ -30,6 +32,7 @@ var schema = buildSchema(`
     type Book {
         author: String!
         title: String!
+        id: Int
     }
 `);
 
@@ -49,14 +52,26 @@ const books = [
     }
 ]
 
-function updateTitle({id, title}){
-    books.map((book) => {
-        if (book.id === id){
-            book.title = title;
-            return book
+function updateTitle(args){
+    const id = args.id;
+    const title = args.title
+    for (let i=0; i<books.length; i++){
+        if (books[i].id === id){
+            books[i].title = title;
+            return books[i];
         }
-    })
-    return books.filter(book => book.id = id)[0]
+    }
+
+    // const id = args.id;
+    // const title = args.title
+    // books.map((book) => {
+    //     if (book.id === id){
+    //         book.title = title;
+    //         return book
+    //     }
+    // })
+    // const returnObj = books.filter(book => book.id = id)[0]
+    // return returnObj;
 }
 
 function getBook(args){
@@ -65,18 +80,26 @@ function getBook(args){
     return returnObj
 }
 
-var resolvers = {
+const resolvers = {
     books: (parent, args, context, info) => {
-        console.log(info)
+
         return books;
+        
     },
     hello: () => {
+
         return 'hello there nicky'
     },
     book: async (args, context, info) => {
+
         return checkCache(args, info, client, getBook)
+
     },
-    updateTitle : updateTitle
+    updateTitle : (args, context, info) => {
+        
+        return updateCache(args, info, client, updateTitle)
+
+    }
 };
 
 // Use those to handle incoming requests:
@@ -85,6 +108,3 @@ app.use(graphqlHTTP({
     rootValue: resolvers,
     graphiql: true
 }));
-
-// Start the server:
-app.listen(port, () => console.log(`Server listening on ${port}`));
