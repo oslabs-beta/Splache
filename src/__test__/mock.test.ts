@@ -1,12 +1,12 @@
-import type * as mock from "../mock"
-const { add } = jest.requireActual<typeof mock>("../mock")
-// import { add } from "../mock"; 
-//this should work, I am not sure why this does not.
-import { checkCache,updateCache } from "../testFunc.ts";
+// import * as mock from "../mock"
+// const { add } = jest.requireActual<typeof mock>("../mock")
+import { add } from "../mock";
+console.log('add', add);
+import { checkCache } from "../testFunc";
 
 describe("test checkCache", () => {
   it('should be a function', ()=> {
-    expect(typeof checkCache()).toBe('Object');
+    expect(typeof checkCache).toBe('function');
   })
 })
 
