@@ -4,6 +4,7 @@ import { buildSchema } from 'graphql';
 import { checkCache, updateCache } from './testFunc.ts';
 const port = 4000;
 
+
 import { createClient } from 'redis';
 
 const client = createClient();
@@ -70,6 +71,7 @@ function updateTitle(args){
         }
     }
 }
+
 function getBook(args){
     const id = args.id;
     const returnObj = books.filter((book) => book.id === id)[0]
@@ -118,6 +120,3 @@ app.use(graphqlHTTP({
     rootValue: resolvers,
     graphiql: true
 }));
-
-// Start the server:
-app.listen(port, () => console.log(`Server listening on ${port}`));
