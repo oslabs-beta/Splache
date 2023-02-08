@@ -2,13 +2,15 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import { checkCache, updateCache } from './testFunc.ts';
+import {queryString} from './queryString.ts'
+import {isCached} from './isCached.ts'
 const port = 4000;
 
 
 import { createClient } from 'redis';
 
-const client = createClient();
-console.log(typeof client)
+export const client = createClient();
+console.log('inside index-test', client)
 
 client.on('error', err => console.log('Redis Client Error', err));
 
@@ -18,6 +20,7 @@ client.connect()
 // Create a server:
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 // Create a schema and a root resolver:
 const schema = buildSchema(`
@@ -115,9 +118,19 @@ const resolvers = {
     }
 };
 
+// graphql?query={book(id:1){title}}
+// http://localhost:4000/graphql?query={book(id:1){title}}
+app.post('/test', queryString, isCached, (req, res) => {
+    //console.log('in the test route', req.body);  
+    console.log('returned data', res.locals.queryResult)
+    res.send('testing')
+});
 
 // Use those to handle incoming requests:
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', (req, res, next) =>{
+    console.log('quering with graphQL')
+    return next();
+}, graphqlHTTP({
     schema,
     rootValue: resolvers,
     graphiql: true
