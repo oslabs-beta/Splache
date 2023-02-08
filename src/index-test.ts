@@ -17,6 +17,7 @@ client.connect()
 
 // Create a server:
 const app = express();
+app.use(express.json());
 
 // Create a schema and a root resolver:
 const schema = buildSchema(`
@@ -114,9 +115,15 @@ const resolvers = {
     }
 };
 
+
 // Use those to handle incoming requests:
-app.use(graphqlHTTP({
+app.use('/graphql', graphqlHTTP({
     schema,
     rootValue: resolvers,
     graphiql: true
 }));
+
+
+app.listen(port, () => {
+    console.log('connected to port 4000!');
+})
