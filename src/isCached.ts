@@ -25,7 +25,7 @@ export async function isCached (req,res,next) {
             .then ((result) => res.locals.queryResult = result);
             console.log(res.locals.queryString, typeof res.locals.queryString);
             console.log(res.locals.queryResult);
-            //await client.SET(res.locals.queryString, JSON.stringify(res.locals.queryResult));
+            await client.SET(res.locals.queryString, JSON.stringify(res.locals.queryResult));
             //return queried
             return next(); 
         }
