@@ -5,29 +5,27 @@ import {graphql} from 'graphql'
 export class SplacheCache {
     schema: GraphQLSchema
     typeSet: any
+    querySet: any
     constructor(schema: GraphQLSchema){
         this.schema = schema
         this.GQLquery = this.GQLquery.bind(this);
         this.typeSet = makeMapFromSchema(this.schema)
+        this.querySet  = makeQuerySetFromSchema(this.schema)
     }
     async GQLquery (req: any, res: any, next: any){
-        const queryString: string = req.body.query;
-        const ast = parse(queryString)
-        console.log(ast)
-        const queryObj = {};
-       visit(ast, {
-          enter(node, key, parent, path, ancestors) {
-            console.log(node)
-          },
-          leave(node, key, parent, path, ancestors) {
-            // @return
-            //   undefined: no action
-            //   false: no action
-            //   visitor.BREAK: stop visiting altogether
-            //   null: delete this node
-            //   any value: replace this node with the returned value
+      const queryString: string = req.body.query;
+      const ast = parse(queryString)
+      const querySet = this.querySet
+      const schema = this.schema
+      visit (ast, {
+        Field: {
+          enter(node){
+            if (querySet.has(node.name.value)){
+              console.log('hey man')
+            }
           }
-        });
+        }
+      })
         graphql({ schema: this.schema, source: queryString })
         .then((queryResult) => {
           res.locals.queryResult = queryResult;
@@ -64,4 +62,14 @@ function makeMapFromSchema(schema: GraphQLSchema){
   }
   console.log(userProvidedTypes)
   return userProvidedTypes
+}
+
+function makeQuerySetFromSchema (schema: GraphQLSchema) {
+  const queryTypeFields = schema.getQueryType()?.getFields();
+  const querySet = new Set();
+  for (const key in queryTypeFields){
+    querySet.add(key);
+  }
+  console.log(querySet)
+  return querySet
 }
