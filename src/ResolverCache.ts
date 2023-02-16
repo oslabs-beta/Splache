@@ -22,7 +22,10 @@ export class ResolverCache {
                 return returnObjParsed
             } 
         }else{
-            const returnObj = callback(args)
+            const returnObj = await callback(args)
+            console.log('returnObj in resolverCache:', returnObj)
+            console.log('keyName: ', key)
+            //caching entire dataset
             await this.client.SET(key, JSON.stringify(returnObj));
             return returnObj
         }

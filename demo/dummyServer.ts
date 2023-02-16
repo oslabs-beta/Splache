@@ -7,9 +7,11 @@ const app = express();
 const PORT = 4001; 
 const schema = require ('./schema.ts'); 
 
+//passing entire schema to SplacheCacheWhole
 const cache = new SplacheCacheWhole(schema);
 
 app.use(express.json())
+
 
 app.use('/graphql', cache.wholeCache, (req, res) => {
   res.send(res.locals.queryResult)
