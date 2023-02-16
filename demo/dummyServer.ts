@@ -1,10 +1,3 @@
-//WHERE R U NIC JACKSON
-//come outside, it works 
-//we r commiting rn and connecting it to the button on the front end 
-//scratch the front end, we'll just show it in postman !!!! c: 
-//come outttttttttt 
-
-//hello nic, pls do not make edits 
 const {graphql, GraphQLSchema} = require('graphql');
 // import {SplacheCache} from '../src/SplacheCache';
 import {SplacheCacheWhole} from '../src/CacheWhole';

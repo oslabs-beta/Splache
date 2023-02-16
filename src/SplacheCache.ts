@@ -70,6 +70,5 @@ function makeQuerySetFromSchema (schema: GraphQLSchema) {
   for (const key in queryTypeFields){
     querySet.add(key);
   }
-  console.log(querySet)
   return querySet
 }

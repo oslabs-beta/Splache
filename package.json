@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "startDemo": "./demo/dummyServer.js",
     "test": "jest",
     "build": "tsc --noEmit false",
     "lint": "eslint ./src --fix"
