@@ -3,8 +3,22 @@ import { RedisClientType } from '@redis/client';
 
 export class ResolverCache {
     client: RedisClientType
-    constructor(){
-        this.client = createClient()
+    constructor(host?:string, port?: number, password?: string){
+        if(host && port && password){
+            this.client = createClient({
+             socket: {
+                 host,port
+             },
+             password
+         })
+         }else if(host && port){
+         this.client = createClient({
+             socket: {
+                 host,port
+             }})
+         }else{
+             this.client = createClient()
+         }
         this.checkCache = this.checkCache.bind(this)
         this.client.connect()
             .then(() => console.log('connected to redis instance'))
