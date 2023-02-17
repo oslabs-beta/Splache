@@ -7,10 +7,24 @@ export class SplacheCacheWhole {
 
     schema: GraphQLSchema
     client: RedisClientType
-    constructor(schema: GraphQLSchema){
+    constructor(schema: GraphQLSchema, host?: string, port?: number, password?: string ){
 
         this.schema = schema;
-        this.client = createClient()
+        if(host && port && password){
+            this.client = createClient({
+             socket: {
+                 host,port
+             },
+             password
+         })
+         }else if(host && port){
+         this.client = createClient({
+             socket: {
+                 host,port
+             }})
+         }else{
+             this.client = createClient()
+         }
         this.wholeCache = this.wholeCache.bind(this)
         this.client.connect()
             .then(() => console.log('connected to redis instance'))
