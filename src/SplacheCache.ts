@@ -1,17 +1,17 @@
 import redis, { createClient, RedisClientType } from 'redis'
-import {parse, visit, BREAK, GraphQLSchema, print, SelectionSetNode, ASTKindToNode } from 'graphql'
+import {parse, visit, BREAK, GraphQLSchema, print, SelectionSetNode, ASTKindToNode, GraphQLScalarType } from 'graphql'
 import {graphql} from 'graphql'
 
 export class SplacheCache {
     schema: GraphQLSchema
-    typeSet: any
-    queryToObjMap: any
+    typeToFields: object
+    queryToReturnType: object
     client: RedisClientType
     constructor(schema: GraphQLSchema){
         this.schema = schema
         this.GQLquery = this.GQLquery.bind(this);
-        this.typeSet = makeMapFromSchema(this.schema)
-        this.queryToObjMap = queryToObjMap(this.schema)
+        this.typeToFields = typeToFields(this.schema)
+        this.queryToReturnType = queryToReturnedType(this.schema)
         this.client = createClient();
         this.client.connect()
           .then(() => console.log('connected to redis'))
@@ -19,8 +19,8 @@ export class SplacheCache {
     async GQLquery (req: any, res: any, next: any){
       const queryString: string = req.body.query;
       const ast = parse(queryString)
-      const printedString = print(ast)
-      makeTemplate(ast)
+      const template = makeTemplate(ast)
+      console.log(template)
         graphql({ schema: this.schema, source: queryString })
         .then((queryResult) => {
           res.locals.queryResult = queryResult;
@@ -36,7 +36,6 @@ async function makeTemplate (ast: any){
   const template: any = {};
   const path: any = [];
   const fieldInfo: any = {};
-
   visit(ast, {
     Field: {
       enter(node:any){
@@ -61,7 +60,9 @@ async function makeTemplate (ast: any){
         if (parent.kind === 'Field'){
           const fields = {};
           for (let i=0; i<node.selections.length; i++){
-            if (!node.selections[i].selectionSet) fields[node.selections[i].name.value] = true
+            if (!node.selections[i].selectionSet) {
+              fields[node.selections[i].name.value] = true
+            }
           }
           const fieldsObj = {
             ...fields,
@@ -80,10 +81,9 @@ async function makeTemplate (ast: any){
       }
     }
   });
-  console.log(template)
   return template
 }
-function makeMapFromSchema(schema: GraphQLSchema){
+function typeToFields(schema: GraphQLSchema){
   const builtInTypes = {
       'String' : 'String',
       'Int': 'Int',
@@ -101,20 +101,40 @@ function makeMapFromSchema(schema: GraphQLSchema){
       '__Directive': '__Directive',
   }
   const typeMap = schema.getTypeMap()
-  const userProvidedTypes = new Set();
-  for (const key in typeMap){
-    if (key in builtInTypes === false) userProvidedTypes.add(key.toLowerCase());
+  console.log(typeMap)
+  const typesToFields = {};
+  for (const type in typeMap){
+    if (type in builtInTypes === false){
+      const tempObj = {};
+      const fields = typeMap[type]._fields
+      for (const field in fields){
+        const key = fields[field].name.toLowerCase();
+        let value: any;
+        if (fields[field].type.ofType) value = fields[field].type.ofType.name.toLowerCase();
+        else value = fields[field].type.name.toLowerCase();
+        tempObj[key] = value
+      }
+      typesToFields[type.toLowerCase()] = tempObj
+    }
+
   }
-  
-  return userProvidedTypes
+  console.log(typesToFields)
+  return typesToFields
 }
 
-function queryToObjMap (schema: GraphQLSchema) {
+function queryToReturnedType (schema: GraphQLSchema) {
   const queryTypeFields = schema.getQueryType()?.getFields();
   const map: any = {}
   for (const key in queryTypeFields){
-    console.log(queryTypeFields)
+    if (queryTypeFields[key].type._interfaces.length > 0) map[key] = queryTypeFields[key].type._interfaces[0].name.toLowerCase();
+    else map[key] = queryTypeFields[key].type.name.toLowerCase();
   }
-  
-  return queryTypeFields
+  console.log(map)
+  return map
+}
+
+function flattenResponse(response: object, ){
+  for (const prop in response){
+
+  }
 }

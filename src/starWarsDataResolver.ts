@@ -142,7 +142,8 @@ export interface Character {
   /**
    * Allows us to query for the human with the given id.
    */
-  export function getHuman(id: string): Human | null {
+  export function getHuman(args: any): Human | null {
+    const id = args.id
     return humanData[id];
   }
   
@@ -153,4 +154,8 @@ export interface Character {
     return droidData[id];
   }
 
-  
+  export function updateHuman(args: any): Human | null {
+    const id = args.id
+    humanData[id][args.prop] = args.update;
+    return humanData[id]
+  }
