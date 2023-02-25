@@ -19,7 +19,6 @@ export class ResolverCache {
             const returnObj = await this.client.GET(key);
             if (typeof returnObj === 'string'){
                 const returnObjParsed = JSON.parse(returnObj);
-                console.log('returned from cache')
                 return returnObjParsed
             } 
         }else{
@@ -29,7 +28,7 @@ export class ResolverCache {
         }
     }
 
-    async updateCache (parent: any, args: {id: number}, context, info: {returnType: any}, callback:any) {
+    async updateCache (parent: any, args: any, context, info: {returnType: any}, callback:any) {
         const key  = makeKey(info, args)
         const returnObj = callback(args)
         await this.client.SET(key, JSON.stringify(returnObj));
@@ -37,7 +36,7 @@ export class ResolverCache {
     }
 }
 
-function makeKey (info:any, args:any){
+export function makeKey (info:any, args:any){
     let key = '';
     if (Object.keys(args).length === 0) key = info.returnType;
     else key = String(info.returnType) + String(args.id);

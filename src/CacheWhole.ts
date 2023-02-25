@@ -17,7 +17,7 @@ export class SplacheCacheWhole {
 
     }
 
-    async wholeCache (req: Request, res: Response, next: NextFunction) {
+    async wholeCache (req: Partial<Request>, res: any, next: NextFunction) {
 
         const queryString : string = req.body.query;
         const isInCache = await this.client.EXISTS(queryString);
@@ -25,7 +25,6 @@ export class SplacheCacheWhole {
             const returnObj = await this.client.GET(queryString);
             if (typeof returnObj === 'string'){
                 const returnObjParsed = JSON.parse(returnObj);
-                console.log('returned from cache')
                 res.locals.queryResult = returnObjParsed;
                 return next(); 
             }
