@@ -23,5 +23,11 @@ app.use('/graphql', cache.wholeCache, (req, res) => {
 //       res.send(response)
 //     })
 // })
+app.use('/graphql', (req, res) => {
+  graphql({ schema: StarWarsSchema, source: req.body.query})
+    .then((response) => {
+      res.send(response)
+    })
+})
 
 app.listen(4000)
