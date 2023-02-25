@@ -8,7 +8,7 @@ import {
   import { GraphQLString } from 'graphql';
   import { GraphQLSchema } from 'graphql';
   
-  import { getDroid, getFriends, getHero, getHuman } from './starWarsData';
+  import { getDroid, getFriends, getHero, getHuman, updateHuman } from './starWarsDataResolver';
 
 import { ResolverCache } from './ResolverCache';
 
@@ -296,11 +296,36 @@ const resolverCache = new ResolverCache();
     }),
   });
   
+  const mutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: () => ({
+      updatehuman: {
+        type: humanType,
+        args: {
+          id: {
+            description: 'id of the human',
+            type: new GraphQLNonNull(GraphQLString),
+          },
+          prop: {
+            description: 'property to be updated',
+            type: new GraphQLNonNull(GraphQLString),
+          },
+          update: {
+            description: 'the new property value',
+            type: new GraphQLNonNull(GraphQLString)
+          },
+        },
+        resolve: (_source, args, info, context) => resolverCache.updateCache(_source, args, info, context, updateHuman),
+      },
+      
+    }),
+  });
   /**
    * Finally, we construct our schema (whose starting query type is the query
    * type we defined above) and export it.
    */
   export const StarWarsSchema: GraphQLSchema = new GraphQLSchema({
     query: queryType,
+    mutation: mutationType,
     types: [humanType, droidType],
   });
