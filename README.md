@@ -22,12 +22,13 @@ Introducing Splache (/splæʃ/), an agile, user-friendly, and lightweight JavaSc
 
 </div>
 
+
 <br/>
 <hr/>
 
 <div align = 'center'>
 
-<span> <h3> Launch Page: Learn More about Splache & Demo our package via an interactive sandbox pre-installation</h3> 
+<h3> Launch Page: Learn More about Splache & Demo our package via an interactive sandbox pre-installation</h3> 
 
 [Link](https://github.com/oslabs-beta/Splache-Launch) </span>
 
@@ -47,4 +48,19 @@ Introducing Splache (/splæʃ/), an agile, user-friendly, and lightweight JavaSc
 
 </div>
 
+<br/>
 
+## How to use our package 
+
+## Current Features
+
+## Iteration Features
+
+<div align = 'center'>
+
+## Connect with the Team!
+| Nicholas Cathcart | Nicolas Jackson | Jessica Wang | Nancy Zhang |
+| :---: | :---: | :---: | :---: |
+| [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/nhcathcart) | [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/NicJax) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](www.linkedin.com/in/NicJax) | [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/jesswang-dev) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/in/jessica-xuecen-wang) | [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/zhangn356 ) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/in/zhangn356) |
+
+</div>
