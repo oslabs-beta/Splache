@@ -5,19 +5,32 @@ import {
   GraphQLSchema,
 } from 'graphql';
 import { graphql } from 'graphql';
-import { query } from 'express';
 
 export class SplacheCache {
   schema: GraphQLSchema;
   typeToFields: object;
   queryToReturnType: object;
   client: RedisClientType;
-  constructor(schema: GraphQLSchema) {
+  constructor(schema: GraphQLSchema, host?: string, port?: number, password?: string) {
     this.schema = schema;
     this.GQLquery = this.GQLquery.bind(this);
     this.typeToFields = typeToFields(this.schema);
     this.queryToReturnType = queryToReturnedType(this.schema);
-    this.client =  createClient();
+    if(host && port && password){
+      this.client = createClient({
+       socket: {
+           host,port
+       },
+       password
+   })
+   }else if(host && port){
+   this.client = createClient({
+       socket: {
+           host,port
+       }})
+   }else{
+       this.client = createClient()
+   }
     this.client.connect().then(() => console.log('connected to redis'));
   }
   async GQLquery(req: any, res: any, next: any) {
@@ -30,13 +43,10 @@ export class SplacheCache {
     const compiledObj = { data: {} };
     for (const query of splitQuery) {
       const isInCache = await this.client.EXISTS(query);
-      //console.log('the query', query, isInCache);
       if (isInCache) {
         const returnObj = await this.client.GET(query);
         if (typeof returnObj === 'string') {
           const returnObjParsed = JSON.parse(returnObj);
-          // console.log(Object.keys(returnObjParsed.data));
-          // console.log('returned from cache', returnObjParsed);
           compiledObj.data[Object.keys(returnObjParsed.data)[0]] =
             returnObjParsed.data[Object.keys(returnObjParsed.data)[0]];
         } else {
@@ -45,7 +55,6 @@ export class SplacheCache {
       } else {
         await graphql({ schema: this.schema, source: query })
           .then((response: any) => {
-            // console.log('response.data', Object.keys(response.data)[0]);
             compiledObj.data[Object.keys(response.data)[0]] =
               response.data[Object.keys(response.data)[0]];
             this.client.SET(query, JSON.stringify(response));
@@ -53,7 +62,6 @@ export class SplacheCache {
           .catch((err) => next({ err })); //clean up error handling
       }
     }
-    //console.log(compiledObj);
     res.locals.queryResult = compiledObj;
     return next();
   }

@@ -7,7 +7,6 @@ export async function checkCache (parent: any, args: {id: number}, context: any,
             const returnObj = await client.GET(key);
             if (typeof returnObj === 'string'){
                 const returnObjParsed = JSON.parse(returnObj);
-                console.log('returned from cache')
                 return returnObjParsed
             } 
         }else{
