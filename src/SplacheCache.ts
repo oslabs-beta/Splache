@@ -17,8 +17,6 @@ export class SplacheCache {
   ) {
     this.schema = schema;
     this.GQLquery = this.GQLquery.bind(this);
-    this.typeToFields = typeToFields(this.schema);
-    this.queryToReturnType = queryToReturnedType(this.schema);
     if (host && port && password) {
       this.client = createClient({
         socket: {
@@ -125,54 +123,6 @@ export async function makeTemplate(ast: any) {
     },
   });
   return [template, fieldInfo];
-}
-
-export function typeToFields(schema: GraphQLSchema) {
-  const builtInTypes = {
-    String: 'String',
-    Int: 'Int',
-    Float: 'Float',
-    Boolean: 'Boolean',
-    ID: 'ID',
-    Query: 'Query',
-    __Type: '__Type',
-    __Field: '__Field',
-    __EnumValue: '__EnumValue',
-    __DirectiveLocation: '__DirectiveLocation',
-    __Schema: '__Schema',
-    __TypeKind: '__TypeKind',
-    __InputValue: '__InputValue',
-    __Directive: '__Directive',
-  };
-  const typeMap: any = schema.getTypeMap();
-  const typesToFields = {};
-  for (const type in typeMap) {
-    if (type in builtInTypes === false) {
-      const tempObj = {};
-      const fields = typeMap[type]._fields;
-      for (const field in fields) {
-        const key = fields[field].name.toLowerCase();
-        let value: any;
-        if (fields[field].type.ofType)
-          value = fields[field].type.ofType.name.toLowerCase();
-        else value = fields[field].type.name.toLowerCase();
-        tempObj[key] = value;
-      }
-      typesToFields[type.toLowerCase()] = tempObj;
-    }
-  }
-  return typesToFields;
-}
-
-export function queryToReturnedType(schema: GraphQLSchema) {
-  const queryTypeFields: any = schema.getQueryType()?.getFields();
-  const map: any = {};
-  for (const key in queryTypeFields) {
-    if (queryTypeFields[key].type._interfaces.length > 0)
-      map[key] = queryTypeFields[key].type._interfaces[0].name.toLowerCase();
-    else map[key] = queryTypeFields[key].type.name.toLowerCase();
-  }
-  return map;
 }
 
 //GQLquery helper functions below
