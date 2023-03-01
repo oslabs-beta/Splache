@@ -50,11 +50,17 @@ Introducing Splache (/splæʃ/), an agile, user-friendly, and lightweight JavaSc
 
 <br/>
 
-## How to use our package 
+## How to use our package
+***
 
-## Current Features
+## Key Features
+***
 
-## Iteration Features
+## Features In Progress
+***
+
+## Contribute 
+***
 
 <div align = 'center'>
 
