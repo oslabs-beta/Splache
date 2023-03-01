@@ -1,45 +1,53 @@
 import { createClient, RedisClientType } from 'redis';
-import {
-  parse,
-  visit,
-  GraphQLSchema,
-} from 'graphql';
+import { parse, visit, GraphQLSchema } from 'graphql';
 import { graphql } from 'graphql';
 
+/* Creates an importable SplacheCache Class that accepts a GraphQL schema 
+and connects to the user's local Redis client or provided Redis client*/
 export class SplacheCache {
   schema: GraphQLSchema;
   typeToFields: object;
   queryToReturnType: object;
   client: RedisClientType;
-  constructor(schema: GraphQLSchema, host?: string, port?: number, password?: string) {
+  constructor(
+    schema: GraphQLSchema,
+    host?: string,
+    port?: number,
+    password?: string
+  ) {
     this.schema = schema;
     this.GQLquery = this.GQLquery.bind(this);
     this.typeToFields = typeToFields(this.schema);
     this.queryToReturnType = queryToReturnedType(this.schema);
-    if(host && port && password){
+    if (host && port && password) {
       this.client = createClient({
-       socket: {
-           host,port
-       },
-       password
-   })
-   }else if(host && port){
-   this.client = createClient({
-       socket: {
-           host,port
-       }})
-   }else{
-       this.client = createClient()
-   }
-    this.client.connect().then(() => console.log('connected to redis'));
+        socket: {
+          host,
+          port,
+        },
+        password,
+      });
+    } else if (host && port) {
+      this.client = createClient({
+        socket: {
+          host,
+          port,
+        },
+      });
+    } else {
+      this.client = createClient();
+    }
+    this.client.connect()
+    .then(() => console.log('connected to redis'))
+    .catch((err) => console.log(`there was a problem connecting to the redis instance: ${err}`))
   }
+  //Partial normalization of the input query through traversing the GraphQL AST to build valid root queries. 
+  //The root queries are checked against the Redis cache as opposed to the original query
   async GQLquery(req: any, res: any, next: any) {
     const queryString: string = req.body.query;
     const ast = parse(queryString);
     const [template, fieldArgs] = await makeTemplate(ast);
-    //---------------
     const splitQuery = qlStrGen(template, fieldArgs);
-
     const compiledObj = { data: {} };
     for (const query of splitQuery) {
       const isInCache = await this.client.EXISTS(query);
@@ -59,7 +67,7 @@ export class SplacheCache {
               response.data[Object.keys(response.data)[0]];
             this.client.SET(query, JSON.stringify(response));
           })
-          .catch((err) => next({ err })); //clean up error handling
+          .catch((err) => next({ err }));
       }
     }
     res.locals.queryResult = compiledObj;
@@ -67,6 +75,8 @@ export class SplacheCache {
   }
 }
 
+// makeTemplate uses the AST from the GraphQL query as an input
+// The visit function is provided by graphql, check documentation here https://graphql.org/graphql-js/language/#visit
 export async function makeTemplate(ast: any) {
   const template: any = {};
   const path: any = [];
@@ -116,6 +126,7 @@ export async function makeTemplate(ast: any) {
   });
   return [template, fieldInfo];
 }
+
 export function typeToFields(schema: GraphQLSchema) {
   const builtInTypes = {
     String: 'String',
@@ -133,7 +144,7 @@ export function typeToFields(schema: GraphQLSchema) {
     __InputValue: '__InputValue',
     __Directive: '__Directive',
   };
-  const typeMap: any= schema.getTypeMap();
+  const typeMap: any = schema.getTypeMap();
   const typesToFields = {};
   for (const type in typeMap) {
     if (type in builtInTypes === false) {
@@ -154,7 +165,7 @@ export function typeToFields(schema: GraphQLSchema) {
 }
 
 export function queryToReturnedType(schema: GraphQLSchema) {
-  const queryTypeFields: any= schema.getQueryType()?.getFields();
+  const queryTypeFields: any = schema.getQueryType()?.getFields();
   const map: any = {};
   for (const key in queryTypeFields) {
     if (queryTypeFields[key].type._interfaces.length > 0)
@@ -164,6 +175,7 @@ export function queryToReturnedType(schema: GraphQLSchema) {
   return map;
 }
 
+//GQLquery helper functions below
 export function qlStrGen(template, fieldArgs) {
   const queryStrs: string[] = [];
   for (const prop in template) {
@@ -178,7 +190,7 @@ export function genArgStr(args) {
   if (Object.keys(args)[0] === undefined) return '';
   let argStr = '(';
   for (const arg in args) {
-    argStr += `${arg}: "${args[arg]}" `
+    argStr += `${arg}: "${args[arg]}" `;
   }
   return (argStr += ')');
 }
@@ -189,7 +201,7 @@ export function genfields(fields) {
     if (typeof fields[field] === 'object') {
       fieldStr += `${field} {${genfields(fields[field])}} `;
     } else {
-      fieldStr += `${field} `;
+      if (field !== 'id') fieldStr += `${field} `;
     }
   }
   return fieldStr;
