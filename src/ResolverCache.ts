@@ -1,6 +1,8 @@
 import {createClient} from 'redis'
 import { RedisClientType } from '@redis/client';
 
+
+//creates an importable ResolverCache Class that connects to the user's local Redis client or provided Redis client 
 export class ResolverCache {
     client: RedisClientType
     constructor(host?:string, port?: number, password?: string){
@@ -26,8 +28,11 @@ export class ResolverCache {
 
     }
 
+    //all instances of ResolverCache have access to the checkCache method which checks the user's cache
+    //if the key already exists in the cache, the result is returned from the user's cache
+    //if not, it is added to the cache with the corresponding result 
     async checkCache (parent: any, args: any, context: any, info: {returnType: any}, callback:any){
-        const key = makeKey(info, args) //set the key equal to the fieldName concatenated with the argValString
+        const key = makeKey(info, args)
         const isInCache = await this.client.EXISTS(key)
         if (isInCache){
             const returnObj = await this.client.GET(key);
@@ -42,6 +47,7 @@ export class ResolverCache {
         }
     }
 
+    //used with mutations that need to update existing information in cache
     async updateCache (parent: any, args: any, context, info: {returnType: any}, callback:any) {
         const key  = makeKey(info, args)
         const returnObj = callback(args)
@@ -50,6 +56,7 @@ export class ResolverCache {
     }
 }
 
+//creates a key that will be the fieldName concatenated with the argument id
 export function makeKey (info:any, args:any){
     let key = '';
     if (Object.keys(args).length === 0) key = info.returnType;
