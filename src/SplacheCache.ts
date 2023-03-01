@@ -181,7 +181,7 @@ export function genfields(fields) {
     if (typeof fields[field] === 'object') {
       fieldStr += `${field} {${genfields(fields[field])}} `;
     } else {
-      fieldStr += `${field} `;
+      if (field !== 'id') fieldStr += `${field} `;
     }
   }
   return fieldStr;
