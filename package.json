@@ -1,7 +1,7 @@
 {
-  "name": "coolql",
+  "name": "Splache",
   "version": "1.0.0",
-  "description": "",
+  "description": "A lightweight caching solution for GraphQL using Redis",
   "main": "index.js",
   "scripts": {
     "test": "jest",
