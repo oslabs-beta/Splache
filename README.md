@@ -27,9 +27,18 @@ Introducing Splache (/splæʃ/), an agile, user-friendly, and lightweight JavaSc
 
 <hr/>
 
-## Key Features & Getting Started
+## Get Started and Installation
+Run ```npm install splache``` to install the package to import ```SplacheCacheWhole```, ```ResolverCache``` and ```SplacheCache```.
 
+### Quick Start with Redis
+If you are new to Redis, here is the [documentation](https://redis.io/docs/getting-started/) to install redis and start a redis instance locally.
+
+### Import splache
 <img src = 'https://i.imgur.com/x4f8SCe.png' width = 250/>
+
+<hr/>
+
+## Key Features
 
 1.<b> The Caching of Whole Queries </b>
 
@@ -62,6 +71,6 @@ Create a new instance of SplacheCache, passing in your schema, host, port, and p
 | :---: | :---: | :---: | :---: |
 | [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/nhcathcart) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/in/nicholas-cathcart-4b3834267/)| [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/NicJax) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](www.linkedin.com/in/NicJax) | [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/jesswang-dev) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/in/jessica-xuecen-wang) | [![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/zhangn356 ) [![LinkedIn](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/in/zhangn356) |
 
-## Note from the Development Team
+## Want to Contribute?
 
 Splache is an open-source product that is open to input and contributions from the community. After trying out the product, feel free to raise issues or submit a PR request.
