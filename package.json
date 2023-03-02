@@ -1,6 +1,6 @@
 {
   "name": "splache",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A lightweight caching solution for GraphQL using Redis",
   "main": "dist/Splache.js",
   "scripts": {
