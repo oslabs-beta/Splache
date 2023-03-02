@@ -7,6 +7,9 @@ export declare class ResolverCache {
     checkCache(parent: any, args: any, context: any, info: {
         returnType: any;
     }, callback: any): Promise<any>;
+    updateCache(parent: any, args: any, context: any, info: {
+        returnType: any;
+    }, callback: any): Promise<any>;
 }
 export declare function makeKey(info: any, args: any): string;
 export declare class SplacheCacheWhole {

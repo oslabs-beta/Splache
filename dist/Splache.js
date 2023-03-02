@@ -59,6 +59,15 @@ class ResolverCache {
             }
         });
     }
+    //used with mutations that need to update existing information in cache
+    updateCache(parent, args, context, info, callback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const key = makeKey(info, args);
+            const returnObj = callback(args);
+            yield this.client.SET(key, JSON.stringify(returnObj));
+            return returnObj;
+        });
+    }
 }
 exports.ResolverCache = ResolverCache;
 //creates a key that will be the fieldName concatenated with the argument id
