@@ -29,5 +29,3 @@ app.use('/graphql', (req, res) => {
       res.send(response)
     })
 })
-
-app.listen(4000)
