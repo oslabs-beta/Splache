@@ -2,5 +2,3 @@
 node_modules
 #ignore json packages
 package-lock.json
-#ignore output file 'dist' of complier
-dist

@@ -117,8 +117,6 @@ export class SplacheCacheWhole {
 
 export class SplacheCache {
     schema: GraphQLSchema;
-    typeToFields: object;
-    queryToReturnType: object;
     client: RedisClientType;
     constructor(
       schema: GraphQLSchema,
@@ -157,7 +155,7 @@ export class SplacheCache {
       const ast = parse(queryString);
       const [template, fieldArgs] = await makeTemplate(ast);
       const splitQuery = qlStrGen(template, fieldArgs);
-      const compiledObj = { data: {} };
+      const compiledObj: any = { data: {} };
       for (const query of splitQuery) {
         const isInCache = await this.client.EXISTS(query);
         if (isInCache) {
@@ -211,7 +209,7 @@ export class SplacheCache {
       SelectionSet: {
         enter(node: any, key, parent: any) {
           if (parent.kind === 'Field') {
-            const fields = {};
+            const fields: any = {};
             for (let i = 0; i < node.selections.length; i++) {
               if (!node.selections[i].selectionSet) {
                 fields[node.selections[i].name.value] = true;
@@ -237,7 +235,7 @@ export class SplacheCache {
   }
   
   //GQLquery helper functions below
-  export function qlStrGen(template, fieldArgs) {
+  export function qlStrGen(template: any, fieldArgs: any) {
     const queryStrs: string[] = [];
     for (const prop in template) {
       let queryStr = `query {${prop} ${genArgStr(fieldArgs[prop])} {`;
@@ -247,7 +245,7 @@ export class SplacheCache {
     return queryStrs;
   }
   
-  export function genArgStr(args) {
+  export function genArgStr(args: any) {
     if (Object.keys(args)[0] === undefined) return '';
     let argStr = '(';
     for (const arg in args) {
@@ -256,7 +254,7 @@ export class SplacheCache {
     return (argStr += ')');
   }
   
-  export function genfields(fields) {
+  export function genfields(fields: any) {
     let fieldStr = '';
     for (const field in fields) {
       if (typeof fields[field] === 'object') {
