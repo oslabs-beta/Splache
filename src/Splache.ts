@@ -46,6 +46,15 @@ export class ResolverCache {
             return returnObj
         }
     }
+
+    //used with mutations that need to update existing information in cache
+    async updateCache (parent: any, args: any, context: any, info: {returnType: any}, callback:any) {
+      const key  = makeKey(info, args)
+      const returnObj = callback(args)
+      await this.client.SET(key, JSON.stringify(returnObj));
+      return returnObj
+  }
+
 }
 
 //creates a key that will be the fieldName concatenated with the argument id
