@@ -19,7 +19,7 @@ Introducing Splache (/splæʃ/), an agile, user-friendly, and lightweight JavaSc
 <br/>
 <hr/>
 
-[Launch Page](www.splachejs.com) : Learn More about Splache & Demo our package via an interactive sandbox pre-installation
+Launch Page: http://splachejs.com/ - Learn More about Splache & Demo our package via an interactive sandbox pre-installation
 
 [Install our NPM Package](https://www.npmjs.com/package/splache)
 
