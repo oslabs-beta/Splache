@@ -19,6 +19,7 @@ describe ("SplacheCache", ()=>{
     afterAll(()=>{
         testSplacheCache.client.QUIT();
     })
+
     it(".GQLquery should attach the correct response to res.locals for one root query", async ()=>{
         const expectedResponse = {
             "data": {
@@ -41,6 +42,7 @@ describe ("SplacheCache", ()=>{
         await testSplacheCache.GQLquery(mockRequest, mockResponse, next)
         expect(mockResponse.locals.queryResult).toEqual(expectedResponse);
     })
+    
     it(".GQLquery should attach the correct response to res.locals for multiple root queries", async ()=>{
         const expectedResponse = {
             "data": {
