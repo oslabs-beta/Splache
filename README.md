@@ -34,7 +34,11 @@ Run ```npm install splache``` to install the package to import ```SplacheCacheWh
 If you are new to Redis, here is the [documentation](https://redis.io/docs/getting-started/) to install redis and start a redis instance locally.
 
 ### Import splache
-<img src = 'https://i.imgur.com/x4f8SCe.png' width = 250/>
+
+```node
+import splache from 'splache'
+
+```
 
 <hr/>
 
@@ -45,26 +49,61 @@ If you are new to Redis, here is the [documentation](https://redis.io/docs/getti
 
 Simply provide SpacheCacheWhole your schema, redis host, redis port, and password (Only provide the password if your external redis instance is password protected. If not, omit the password. Additionally, omit host, port, and password arguments if connecting to local redis instance) and then direct your queries through the middleware as seen in the example below. 
 
-<img src = 'https://i.imgur.com/JyYSNcf.png' width = 500/>
+
+```node
+import { SplacheCacheWhole }
+
+const cache = new SplacheCacheWhole(schema, host, post, password);
+
+app.use('/graphql', cache.wholeCache, (req, res) => {
+ res.send(res.locals.queryResponse) 
+})
+```
+
 
 2. <b> The Caching of Resolvers </b>
 
-<img src = 'https://i.imgur.com/X3tzbcY.png' width = 500/>
+```node
+import { ResolverCache } from 'Splache' 
+
+const cache = new ResolverCache(host, port, password) 
+```
 
 Upon importing ResolverCache from our package, create a new instance of ResolverCache to access the ‘checkCache’ method. From there, simply wrap your resolver functions with our pre-built functionality.
 
 Here is an example:
 
-<img src = 'https://i.imgur.com/THm1cnk.png' width = 500/>
+
+```node
+planet : {
+  type: Planet,
+  args: {
+   id : {
+     description: 'id of the planet'
+     type: new GraphQLNonNull(GraphQLString)
+  }
+ },
+ resolve: ((parent, args, context, info) => cache.checkCache(parents, args, context, info, getPlanet))
+}
+```
+
 
 3. <b> The Caching of Normalized Query Strings & Breakdown of Complex Nested Queries </b>
 
 Create a new instance of SplacheCache, passing in your schema, host, port, and password (omit host, port, and password if just connecting to local redis instance). By passing your query through our GQLquery method, it’ll generalize and split your query string and check the cache for these individual split queries. This reduces redundancy in your cache if existing cached queries are nested into a complex nested query. 
 
-<img src = 'https://i.imgur.com/7FZHJoi.png' width = 500/>
+
+```node
+import { SplacheCache } from 'splache' 
+const cache = newSplacheCache(schema, host, port, password);
+
+app.use('/graphql', cacheGQLquery, (req, res) => {
+  res.send(res.locals.queryResponse)
+})
+```
 
 ## Currently Under Development
-[ ] 
+
 
 ## Connect with the Team!
 | Nicholas Cathcart | Nicolas Jackson | Jessica Wang | Nancy Zhang |
